@@ -1,0 +1,105 @@
+import random
+import os
+
+#baraja de cartas (baraja americana) con la que se va a jugar.
+baraja = [2, 3, 4, 5, 6, 7, 8, 9, 10, 2, 3, 4, 5, 6, 7, 8, 9, 10, 2, 3, 4, 5, 6, 7, 8, 9, 10, 2, 3, 4, 5, 6, 7, 8, 9, 10, 'J', 'Q', 'K', 'AS', 'J', 'Q', 'K', 'AS', 'J', 'Q', 'K', 'AS', 'J', 'Q', 'K', 'AS']
+
+
+#funcion borar
+def borrar():
+	if os.name == 'nt':
+		os.system('CLS')
+	if os.name == 'posix':
+		os.system('clear')
+  
+#funcion repartir
+def repartir (baraja):
+    mano = []
+    for i in range (2):
+        random.shuffle (baraja)
+        carta = baraja.pop()
+        mano.append (carta)
+    return mano
+
+
+# funcion para calcular el valor de la mano
+def mano_total (mano):
+    total = 0
+    for carta in mano :
+        if carta == "J" or carta == "Q" or carta =="K" :
+            total += 10
+        elif carta == "AS":
+            if total >= 11:
+              total +=1
+            else:
+              total += 11
+        else:
+            total += carta
+
+    return total
+
+
+def pedir_carta (mano):
+    random.shuffle (baraja)
+    carta = baraja.pop()
+    mano.append(carta)
+    #print ("Usted tiene un " + str(mano) +  " Para un total de :" + str(mano_total(mano)))
+    
+
+    
+
+def resultado (mano_del_jugador, mano_del_croupier):
+    print ("TU MANO ES: " + str(mano_del_jugador) + " Para un total de :" + str(mano_total(mano_del_jugador)))
+    #print ("LA MANO DEL CROUPIER ES: " + str(mano_del_croupier) + " Para un total de :" + str(mano_total(mano_del_croupier)))
+    if mano_total (mano_del_jugador) == 21:
+        print ("ENHORABUENA, TIENE BLACKJACK!!")
+        exit()
+    elif mano_total (mano_del_croupier) == 21:
+        print ("HA PERDIDO, EL CROUPIER TIENE BLACKJACK")
+        exit()
+    elif mano_total(mano_del_jugador) > 21:
+        print ("SE HA PASADO! HA PERDIDO")
+        exit()
+    elif mano_total(mano_del_croupier) > 21:
+        print ("TURNO DEL COUPIER. AHORA TIENE: " + str(mano_del_croupier) + " Para un total de :" + str(mano_total(mano_del_croupier)))
+        print ("EL CROUPIER SE HA PASADO, USTED GANA")
+        exit()
+    elif mano_total (mano_del_jugador) > mano_total(mano_del_croupier):
+        print ("TURNO DEL COUPIER. AHORA TIENE: " + str(mano_del_croupier) + " Para un total de :" + str(mano_total(mano_del_croupier)))
+        print ("HA SUPERADO AL CROUPIER, USTED GANA")
+    elif mano_total (mano_del_jugador) < mano_total(mano_del_croupier):
+        print ("TURNO DEL COUPIER. AHORA TIENE: " + str(mano_del_croupier) + " Para un total de :" + str(mano_total(mano_del_croupier)))
+        print ("EL CROUPIER LE HA SUPERADO, HA PERDIDO")
+    
+      
+         
+        
+# crear la funcion juego
+def juego ():
+    borrar()
+    print ("BIENVENIDO A BLACKJACK")
+    mano_del_jugador = repartir (baraja)
+    mano_del_croupier = repartir (baraja)
+    #conocer su mano y una carta de la del corupier (regla clásica)
+    print ("Usted tiene un " + str(mano_del_jugador) +  " Para un total de: " + str(mano_total(mano_del_jugador)))
+    print ("El croupier está mostrando un: " + str(mano_del_croupier[0]))
+    #decidir cual va a ser tu próximo moviento. Si te plantas o si pides.
+    eleccion = input("Desea (1) Pedir carta o (2) Plantarse : ")
+    
+    if (eleccion == "1"):
+        print("USTED HA DECIDIDO PEDIR CARTA")
+        pedir_carta (mano_del_jugador)
+        while mano_total(mano_del_croupier) < 17:
+            pedir_carta(mano_del_croupier)
+        resultado(mano_del_jugador , mano_del_croupier)
+        eleccion = input("¿Desea (1)pedir carta o (2)plantarse ?: ")
+        #resultado (mano_del_jugador , mano_del_croupier)       
+    elif eleccion == "2":
+        print("USTED HA DECIDIDO PLANTARSE")
+        print ("LA MANO DEL CROUPIER ES: " + str(mano_del_croupier) + " Para un total de :" + str(mano_total(mano_del_croupier)))
+        while (mano_total(mano_del_croupier) < 17):
+            pedir_carta (mano_del_croupier)
+        resultado (mano_del_jugador , mano_del_croupier) 
+
+
+juego ()
